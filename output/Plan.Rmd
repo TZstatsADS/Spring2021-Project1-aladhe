@@ -1,0 +1,46 @@
+---
+title: "plan"
+author: "Siyuan Sang"
+date: "2021/1/28"
+output: html_document
+---
+
+Plan: What it looks like to be a loyal democrat supporter in 2016
+Data select:
+Define “loyal supporter”:
+a.	V161006 PRE: Recall of last (2012) Presidential vote choice   1
+b.	V161027 PRE: For whom did R vote for President   1 
+OR
+               V162034a POST: For whom did R vote for President     1
+c.	V162047 POST: R's vote for U.S. Senate (ballot card) OR
+V161047 PRE: R's vote for U.S. Senate (ballot card)
+d.	V162053 POST: R’s vote for governor(ballot card) OR
+V161056 PRE: R’s vote for governor(ballot card)
+Compare following aspects to the full poll:
+a.	Gender
+V161342 PRE FTF CASI / WEB: R self-identified gender
+b.	Age group
+V161267x PRE: SUMMARY - Respondent age group
+c.	Racial diversity
+V161310x PRE: SUMMARY - R self-identified race
+d.	Income:
+V161361x PRE FTF CASI/WEB: Pre income summary
+e.	Opinion to LGBTQ policy
+V161228x PRE: SUMMARY - Transgender policy
+f.	Attention to politics:
+V162256 POST: R’s interest in politics
+g.	Political Participation:
+V162010 POST: R talk to anyone about voting for or against cand or pty OR
+ V162011 POST: R go to any political meetings, rallies, speeches OR
+ V162012 POST: R wear campaign button or post sign or bumper sticker OR
+ V162013 POST: R do any (other) work for party or candidate
+OR
+V162014 1
+V161009
+
+
+clean the data we'd like to use
+```{r}
+anes_dat$V161342<-as.factor(anes_dat$V161342)
+```
+

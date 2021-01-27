@@ -1,0 +1,180 @@
+---
+title: "Does 'party loyalty' appeared in the 2016 election?"
+author: "Siyuan Sang"
+date: "2021/1/26"
+output: html_document
+---
+# 1. Introduction
+"Party loyalty" refers to the situation in which voters are so comfortable with a certain party’s views and values that they have very high preference to vote for a certain party. It can be very dangerous because it may prevent the candidates from being punished for their undemocratic behaviors. In 2016 presidential campaign, the raise of Former President Donald J. Trump raise people's worry about this kind of "loyalty". However, does "party loyalty" really appear in the 2016 campaign? The American National Election Studies (ANES) data might be a key to answer this question.
+
+![alt text here](C:\Users\13605\Documents\GitHub\Spring2021-Project1-aladhe\figs\loyal.jpg)
+```{r load library and read in data, warning=FALSE, message=FALSE, include=FALSE}
+library(tidyverse)
+library(dbplyr)
+library(ggplot2)
+library(haven)
+anes_dat<-read_sav("C:/Users/13605/Documents/GitHub/Spring2021-Project1-aladhe/data/anes_timeseries_2016.sav")
+```
+
+# 2. Define the "loyal voters"
+First, we need to define the term "loyal supporter".
+In my project, I define the "loyal voter" as people who vote for candidates of a specific party in 2012 presidential campaign, 2016 presidential campaign, and U.S. Senate.
+Under this principle there're 583 loyal democrats voters and 414 loyal republican voters, and 3273 voters showed no "party loyalty" in the campaign.
+```{r define the loyal variable, echo=FALSE}
+anes_dat$loyal<-ifelse((anes_dat$V161006==1&(anes_dat$V161027==1|anes_dat$V162034a==1)&(anes_dat$V161047==1|anes_dat$V162047==1)),"Democrats loyal",ifelse((anes_dat$V161006==2&(anes_dat$V161027==2|anes_dat$V162034a==2)&(anes_dat$V161047==2|anes_dat$V162047==2)),"Republican loyal","Not loyal to main parties"))
+table(anes_dat$loyal)
+```
+# 3. How to prove the existence of "loyal voters"
+If groups of "loyal voters" really exist, then by definition, they should have lower political attention and participation than the rest of voters (because they don’t rely on specific governance measures to make the decision). At the same time, I think that as a group divided by ideology, they should have some common identity characteristics.
+As a result, I choose four indentity characteristics as well as seven variables about political participation as indicators of my research.
+
+## 3.1 Indentity characteristics
+
+### a.Gender
+
+```{r echo=FALSE}
+anes_dat$gender<-as.factor(anes_dat$V161342)
+ ggplot(anes_dat, aes(x=gender,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(title="gender distributions compare",y ="Percent",fill="gender") +
+   scale_fill_discrete(name="Self-identified Gender",
+                         breaks=c("1", "2", "3","4"),
+                         labels=c("Refused", "Male", "Female","Other"))+
+    facet_grid(~loyal) +
+    scale_y_continuous(labels = scales::percent)
+```
+
+About 7% more female in Democrats loyal group than major group, and 8% more male in Republican loyal group. 
+
+### b.Age Group
+```{r echo=FALSE}
+anes_dat$age<-as.factor(anes_dat$V161267x)
+ ggplot(anes_dat, aes(x=age,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+    labs(title="Age Group distributions compare",y ="Percent",fill="age") +
+    facet_grid(~loyal) +
+    scale_fill_discrete(name="Age Group",
+                         breaks=c("1", "2", "3","4","5","6","7","8","9","10","11","12","13","14"),
+                         labels=c("Missing", "18-20", "21-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75 or older"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+A lot more elderly group in both loyal groups. 
+
+### c.Racial diversity:
+```{r echo=FALSE}
+anes_dat$race<-as.factor(anes_dat$V161310x)
+ ggplot(anes_dat, aes(x=race,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+    labs(title="Race distributions compare",y ="Percent",fill="race") +
+    facet_grid(~loyal) +
+       geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+   scale_fill_discrete(name="Race Group",
+                         breaks=c("1", "2", "3","4","5","6","7"),
+                         labels=c("Missing", "White, non-Hispanic", "Black, non-Hispanic","Asian, native Hawaiian or
+other Pacif Islr,non-Hispanic","Native American or Alaska
+Native, non-Hispanic","Hispanic","Other non-Hispanic incl
+multiple races"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+Noticeable difference between republican loyal group and other groups, which is mostly white people(92.5%).
+
+### d.Income
+```{r echo=FALSE}
+anes_dat$income<-ifelse(anes_dat$V161361x ==-9|anes_dat$V161361x ==-5|anes_dat$V161361x ==1|anes_dat$V161361x ==2|anes_dat$V161361x ==3|anes_dat$V161361x ==4|anes_dat$V161361x ==5|anes_dat$V161361x ==6|anes_dat$V161361x ==7|anes_dat$V161361x ==8,"0~29,999", ifelse(anes_dat$V161361x ==9|anes_dat$V161361x ==10|anes_dat$V161361x ==11|anes_dat$V161361x ==12|anes_dat$V161361x ==13|anes_dat$V161361x ==14|anes_dat$V161361x ==15,"30,000~49,999", ifelse(anes_dat$V161361x ==16|anes_dat$V161361x ==17|anes_dat$V161361x ==18|anes_dat$V161361x ==19|anes_dat$V161361x ==20|anes_dat$V161361x ==21|anes_dat$V161361x ==22,"50,000~99,999",ifelse(anes_dat$V161361x ==23|anes_dat$V161361x ==24|anes_dat$V161361x ==25|anes_dat$V161361x ==26|anes_dat$V161361x ==27,"100,000~249,999","Higher than 250,000"))))
+```
+
+```{r echo=FALSE}
+ ggplot(anes_dat, aes(x=income,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+   geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(title="Income distributions compare",y ="Percent",fill="income") +
+    facet_grid(~loyal) +
+   scale_fill_discrete(name="Income Group",
+                         breaks=c("1", "2", "3","4","5"),
+                         labels=c("0~29,999", "30,000~49,999","50,000~99,999","100,000~249,999","Higher than 250,000"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+Democrats loyal group have more people with an income 50,000~99,999, and republican loyal group has obviously more people with income 100,000~249,999
+
+### e.Summary
+
+As for the Indentity characteristics, both democrats and republican loyal groups show many obvious differences from the major group. So we can conclude that the "loyal voters" do have some common features that are different from the major group. However, only this part cannot fully prove the existence of "party loyalty". We need to further examine their intension of participating in politics.
+
+## 3.2 Political participation
+
+### a.Self-identified attention to politics
+```{r echo=FALSE}
+anes_dat$politics<-as.factor(anes_dat$V162256)
+ ggplot(anes_dat, aes(x=politics,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+   geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(title="Attention to politics",y ="Percent",fill="politics") +
+    facet_grid(~loyal) +
+    scale_fill_discrete(name="Attention to politics",
+                         breaks=c("1", "2", "3","4","5","6","7","8"),
+                         labels=c("Refused", "Don't know", "No post data","No post-election interview","Very interested","Somewhat interested","Not very interested","Not at all interested"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+"Loyal voters" think they care more interested in politics according to the result.
+
+### b.Participation to the political events
+```{r echo=FALSE}
+anes_dat$partic<-ifelse(anes_dat$V162010 ==1|anes_dat$V162011 ==1|anes_dat$V162012==1|anes_dat$V162013==1|anes_dat$V162014==1,"active","inactive")
+ggplot(anes_dat, aes(x=partic,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+   geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(title="Attention to politics",y ="Percent",fill="partic") +
+    facet_grid(~loyal) +
+    scale_fill_discrete(name="Political participation",
+                         breaks=c("1", "2"),
+                         labels=c("Active", "Inactive"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+Both "loyal voters" groups devote more on the campaign than major group.
+
+
+### c.Summary
+
+From the analysis, we can see the "loyal voters" tend to participate more into the political events, which is opposite to the definition of "party loyalty". So I get no sufficient evidence of "party loyalty" in this part.
+
+# 4.Conclusion
+
+From the analysis above. I don't think there is a "party loyal" group that care not much on the campaign while blindly vote for a certain party exist in the 2016 presidential campaign. With higher age and income as well as more intention to participate in the politics, they might have enough practice to prove their "loyalty" are the best choice of themselves. However, this research also suggests that many "stereotypes" we hold for voters of both  parties really exist in practice. Further research might be necessary to see if this kind of common features could lead to "party loyalty" in the future.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

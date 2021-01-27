@@ -1,0 +1,30 @@
+---
+title: "Definitions"
+author: "Siyuan Sang"
+date: "2021/1/28"
+output: html_document
+---
+According to plan, loyal var:
+```{r define the loyal variable, echo=FALSE}
+anes_dat$loyal<-ifelse((anes_dat$V161006==1&(anes_dat$V161027==1|anes_dat$V162034a==1)&(anes_dat$V161047==1|anes_dat$V162047==1)),"Democrats loyal",ifelse((anes_dat$V161006==2&(anes_dat$V161027==2|anes_dat$V162034a==2)&(anes_dat$V161047==2|anes_dat$V162047==2)),"Republican loyal","Not loyal to main parties"))
+table(anes_dat$loyal)
+```
+
+
+Clean the data to get new vars:
+```{r echo=FALSE}
+anes_dat$gender<-as.factor(anes_dat$V161342)
+anes_dat$age<-as.factor(anes_dat$V161267x)
+anes_dat$race<-as.factor(anes_dat$V161310x)
+anes_dat$politics<-as.factor(anes_dat$V162256)
+```
+
+More complex new var needed: 
+income
+```{r echo=FALSE}
+anes_dat$income<-ifelse(anes_dat$V161361x ==-9|anes_dat$V161361x ==-5|anes_dat$V161361x ==1|anes_dat$V161361x ==2|anes_dat$V161361x ==3|anes_dat$V161361x ==4|anes_dat$V161361x ==5|anes_dat$V161361x ==6|anes_dat$V161361x ==7|anes_dat$V161361x ==8,"0~29,999", ifelse(anes_dat$V161361x ==9|anes_dat$V161361x ==10|anes_dat$V161361x ==11|anes_dat$V161361x ==12|anes_dat$V161361x ==13|anes_dat$V161361x ==14|anes_dat$V161361x ==15,"30,000~49,999", ifelse(anes_dat$V161361x ==16|anes_dat$V161361x ==17|anes_dat$V161361x ==18|anes_dat$V161361x ==19|anes_dat$V161361x ==20|anes_dat$V161361x ==21|anes_dat$V161361x ==22,"50,000~99,999",ifelse(anes_dat$V161361x ==23|anes_dat$V161361x ==24|anes_dat$V161361x ==25|anes_dat$V161361x ==26|anes_dat$V161361x ==27,"100,000~249,999","Higher than 250,000"))))
+```
+participation
+```{r}
+anes_dat$partic<-ifelse(anes_dat$V162010 ==1|anes_dat$V162011 ==1|anes_dat$V162012==1|anes_dat$V162013==1|anes_dat$V162014==1,"active","inactive")
+```

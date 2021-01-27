@@ -1,0 +1,112 @@
+---
+title: "Does 'party loyalty' appeared in the 2016 election?"
+author: "Siyuan Sang"
+date: "2021/1/26"
+output: html_document
+---
+
+```{r load library and read in data, warning=FALSE, message=FALSE, include=FALSE}
+library(tidyverse)
+library(dbplyr)
+library(ggplot2)
+library(haven)
+anes_dat<-read_sav("C:/Users/13605/Documents/GitHub/Spring2021-Project1-aladhe/data/anes_timeseries_2016.sav")
+```
+
+
+```{r define the loyal variable, echo=FALSE}
+anes_dat$loyal<-ifelse((anes_dat$V161006==1&(anes_dat$V161027==1|anes_dat$V162034a==1)&(anes_dat$V161047==1|anes_dat$V162047==1)),"Democrats loyal",ifelse((anes_dat$V161006==2&(anes_dat$V161027==2|anes_dat$V162034a==2)&(anes_dat$V161047==2|anes_dat$V162047==2)),"Republican loyal","Not loyal to main parties"))
+table(anes_dat$loyal)
+```
+
+```{r echo=FALSE}
+anes_dat$gender<-as.factor(anes_dat$V161342)
+ ggplot(anes_dat, aes(x=gender,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(title="gender distributions compare",y ="Percent",fill="gender") +
+   scale_fill_discrete(name="Self-identified Gender",
+                         breaks=c("1", "2", "3","4"),
+                         labels=c("Refused", "Male", "Female","Other"))+
+    facet_grid(~loyal) +
+    scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r echo=FALSE}
+anes_dat$age<-as.factor(anes_dat$V161267x)
+ ggplot(anes_dat, aes(x=age,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+    labs(title="Age Group distributions compare",y ="Percent",fill="age") +
+    facet_grid(~loyal) +
+    scale_fill_discrete(name="Age Group",
+                         breaks=c("1", "2", "3","4","5","6","7","8","9","10","11","12","13","14"),
+                         labels=c("Missing", "18-20", "21-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75 or older"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r echo=FALSE}
+anes_dat$race<-as.factor(anes_dat$V161310x)
+ ggplot(anes_dat, aes(x=race,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+    labs(title="Race distributions compare",y ="Percent",fill="race") +
+    facet_grid(~loyal) +
+       geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+   scale_fill_discrete(name="Race Group",
+                         breaks=c("1", "2", "3","4","5","6","7"),
+                         labels=c("Missing", "White, non-Hispanic", "Black, non-Hispanic","Asian, native Hawaiian or
+other Pacif Islr,non-Hispanic","Native American or Alaska
+Native, non-Hispanic","Hispanic","Other non-Hispanic incl
+multiple races"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r echo=FALSE}
+anes_dat$income<-ifelse(anes_dat$V161361x ==-9|anes_dat$V161361x ==-5|anes_dat$V161361x ==1|anes_dat$V161361x ==2|anes_dat$V161361x ==3|anes_dat$V161361x ==4|anes_dat$V161361x ==5|anes_dat$V161361x ==6|anes_dat$V161361x ==7|anes_dat$V161361x ==8,"0~29,999", ifelse(anes_dat$V161361x ==9|anes_dat$V161361x ==10|anes_dat$V161361x ==11|anes_dat$V161361x ==12|anes_dat$V161361x ==13|anes_dat$V161361x ==14|anes_dat$V161361x ==15,"30,000~49,999", ifelse(anes_dat$V161361x ==16|anes_dat$V161361x ==17|anes_dat$V161361x ==18|anes_dat$V161361x ==19|anes_dat$V161361x ==20|anes_dat$V161361x ==21|anes_dat$V161361x ==22,"50,000~99,999",ifelse(anes_dat$V161361x ==23|anes_dat$V161361x ==24|anes_dat$V161361x ==25|anes_dat$V161361x ==26|anes_dat$V161361x ==27,"100,000~249,999","Higher than 250,000"))))
+```
+
+```{r echo=FALSE}
+ ggplot(anes_dat, aes(x=income,  group=loyal)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count",position=position_dodge(0.7),width=0.5) +
+   geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(title="Income distributions compare",y ="Percent",fill="income") +
+    facet_grid(~loyal) +
+   scale_fill_discrete(name="Income Group",
+                         breaks=c("1", "2", "3","4","5"),
+                         labels=c("0~29,999", "30,000~49,999","50,000~99,999","100,000~249,999","Higher than 250,000"))+
+    scale_y_continuous(labels = scales::percent)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
